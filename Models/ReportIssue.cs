@@ -8,15 +8,15 @@ namespace RI_App.Models
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Location is required")]
-        public string Location { get; set; }
+        public string? Location { get; set; }
 
         [Required(ErrorMessage = "Category is required")]
-        public string Category { get; set; }
+        public string? Category { get; set; }
 
         [Required(ErrorMessage = "Description is required")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
-        public string AttachmentPath { get; set; }
+        public string? AttachmentPath { get; set; }
 
         public DateTime DateReported { get; set; } = DateTime.Now;
     }
