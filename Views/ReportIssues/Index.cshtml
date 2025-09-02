@@ -1,4 +1,8 @@
-﻿@if (Model == null || !Model.Any())
+﻿@using System.Linq
+@model IEnumerable<RI_App.Models.ReportIssue>
+
+
+@if (Model == null || !Model.Any())
 {
     <p class="text-muted">No issues have been reported yet.</p>
 }
@@ -25,11 +29,8 @@ else
                     <td>
                         @if (!string.IsNullOrEmpty(issue.AttachmentPath))
                         {
-                            <a href="@issue.AttachmentPath" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
-                        }
-                        else
-                        {
-                            <span class="text-muted">No file</span>
+                            var fileName = System.IO.Path.GetFileName(issue.AttachmentPath);
+                            <a href="@issue.AttachmentPath" target="_blank">@fileName</a>
                         }
                     </td>
                 </tr>
