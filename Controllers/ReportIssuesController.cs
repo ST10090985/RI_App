@@ -46,13 +46,23 @@ namespace RI_App.Controllers
                 TempData["SuccessMessage"] = "Issue reported successfully!";
                 return RedirectToAction("Create");
             }
+
+            else
+            {
+                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
+                Console.WriteLine(string.Join(",", errors)); // for debugging
+            }
+
             return View(issue);
         }
 
         public IActionResult Index()
         {
             var issues = _context.ReportIssues.ToList();
+
+
             return View(issues);
         }
+
     }
 }

@@ -1,9 +1,9 @@
-﻿@model IEnumerable<RI_App.Models.ReportIssue>
-
-<div class="container mt-5">
-    <h2>Reported Issues</h2>
-    <hr />
-
+﻿@if (Model == null || !Model.Any())
+{
+    <p class="text-muted">No issues have been reported yet.</p>
+}
+else
+{
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
@@ -27,11 +27,13 @@
                         {
                             <a href="@issue.AttachmentPath" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
                         }
+                        else
+                        {
+                            <span class="text-muted">No file</span>
+                        }
                     </td>
                 </tr>
             }
         </tbody>
     </table>
-
-    <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Main Menu</a>
-</div>
+}
