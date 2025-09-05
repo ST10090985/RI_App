@@ -20,3 +20,28 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+/* Default Light Mode (bootstrap already handles most) */
+body {
+    background-color: #ffffff;
+    color: #000000;
+}
+
+    /* Dark Mode */
+    body.dark-mode {
+        background-color: #121212;
+        color: #e0e0e0;
+    }
+
+        body.dark-mode .navbar {
+            background-color: #1f1f1f !important;
+        }
+
+        body.dark-mode .table {
+            background-color: #1f1f1f;
+            color: #e0e0e0;
+        }
+
+        body.dark-mode .btn {
+            border-color: #e0e0e0;
+        }

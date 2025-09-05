@@ -30,6 +30,11 @@
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
                     </ul>
+
+                    <!-- ADDED: Dark/Light Mode Toggle -->
+                    <div class="d-flex">
+                        <button id="theme-toggle" class="btn btn-outline-dark btn-sm ms-2">🌙 Dark Mode</button>
+                    </div>
                 </div>
             </div>
         </nav>
@@ -45,9 +50,42 @@
             &copy; 2025 - RI_App - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- ADDED: Dark/Light Mode Script -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const toggleBtn = document.getElementById("theme-toggle");
+            const body = document.body;
+
+            // Load saved preference
+            if (localStorage.getItem("theme") === "dark") {
+                body.classList.add("dark-mode");
+                toggleBtn.textContent = "☀️ Light Mode";
+                toggleBtn.classList.remove("btn-outline-dark");
+                toggleBtn.classList.add("btn-outline-light");
+            }
+
+            toggleBtn.addEventListener("click", function () {
+                body.classList.toggle("dark-mode");
+
+                if (body.classList.contains("dark-mode")) {
+                    localStorage.setItem("theme", "dark");
+                    toggleBtn.textContent = "☀️ Light Mode";
+                    toggleBtn.classList.remove("btn-outline-dark");
+                    toggleBtn.classList.add("btn-outline-light");
+                } else {
+                    localStorage.setItem("theme", "light");
+                    toggleBtn.textContent = "🌙 Dark Mode";
+                    toggleBtn.classList.remove("btn-outline-light");
+                    toggleBtn.classList.add("btn-outline-dark");
+                }
+            });
+        });
+    </script>
 </body>
 </html>
