@@ -71,16 +71,6 @@ body {
                 border-color: #333;
             }
 
-        /* Links */
-        body.dark-mode a {
-            color: #4dabf7;
-        }
-
-            body.dark-mode a:hover {
-                color: #82cfff;
-            }
-
-        /* Buttons */
         body.dark-mode .btn {
             border-color: #e0e0e0;
             color: #e0e0e0;

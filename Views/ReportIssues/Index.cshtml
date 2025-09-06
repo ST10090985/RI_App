@@ -1,4 +1,7 @@
-﻿@* Show a message if there are no issues *@
+﻿@using System.Linq
+@model IEnumerable<RI_App.Models.ReportIssue>
+
+
 @if (Model == null || !Model.Any())
 {
     <p class="text-muted">No issues have been reported yet.</p>
@@ -29,11 +32,8 @@ else
                         @* If an attachment exists, show a text name to view it *@
                         @if (!string.IsNullOrEmpty(issue.AttachmentPath))
                         {
-                            <a href="@issue.AttachmentPath" target="_blank" class="btn btn-sm btn-outline-primary">View</a>
-                        }
-                        else
-                        {
-                            <span class="text-muted">No file</span>
+                            var fileName = System.IO.Path.GetFileName(issue.AttachmentPath);
+                            <a href="@issue.AttachmentPath" target="_blank">@fileName</a>
                         }
                     </td>
                 </tr>
