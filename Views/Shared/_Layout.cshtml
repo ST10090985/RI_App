@@ -14,13 +14,19 @@
 
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <!-- Navbar - removed hardcoded bg-white so dark mode CSS can control it -->
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm border-bottom box-shadow mb-3">
             <div class="container-fluid">
+                <!-- Navbar Brand -->
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">RI_App</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+
+                <!-- Mobile Toggle -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+                <!-- Navigation Links -->
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
@@ -31,7 +37,7 @@
                         </li>
                     </ul>
 
-                    <!-- ADDED: Dark/Light Mode Toggle -->
+                    <!-- Dark/Light Mode Toggle Button -->
                     <div class="d-flex">
                         <button id="theme-toggle" class="btn btn-outline-dark btn-sm ms-2">🌙 Dark Mode</button>
                     </div>
@@ -39,6 +45,7 @@
             </div>
         </nav>
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -51,18 +58,19 @@
         </div>
     </footer>
 
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
-    <!-- ADDED: Dark/Light Mode Script -->
+    <!-- Dark/Light Mode Script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const toggleBtn = document.getElementById("theme-toggle");
             const body = document.body;
 
-            // Load saved preference
+            // Load saved theme preference
             if (localStorage.getItem("theme") === "dark") {
                 body.classList.add("dark-mode");
                 toggleBtn.textContent = "☀️ Light Mode";
