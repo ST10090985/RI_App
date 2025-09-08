@@ -1,4 +1,4 @@
-html {
+﻿html {
     font-size: 14px;
 }
 
@@ -44,14 +44,21 @@ body {
         /* Navbar */
         body.dark-mode .navbar {
             background-color: #1f1f1f !important;
+            border-bottom: 1px solid #333;
         }
 
+            /* ✅ Brand title (RI_App) turns white */
+            body.dark-mode .navbar .navbar-brand {
+                color: #ffffff !important;
+            }
+
+            /* ✅ Nav links turn white */
             body.dark-mode .navbar .nav-link {
-                color: #e0e0e0 !important;
+                color: #ffffff !important;
             }
 
                 body.dark-mode .navbar .nav-link:hover {
-                    color: #ffffff !important;
+                    color: #0d6efd !important; /* Bootstrap blue */
                 }
 
         /* Table */
@@ -112,3 +119,13 @@ body {
             background-color: #1f1f1f;
             color: #bdbdbd;
         }
+
+            /* ✅ Footer links white in dark mode */
+            body.dark-mode footer a {
+                color: #ffffff !important;
+                text-decoration: none;
+            }
+
+                body.dark-mode footer a:hover {
+                    color: #0d6efd !important; /* Bootstrap blue on hover */
+                }

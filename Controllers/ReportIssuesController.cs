@@ -1,17 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using RI_App.Data;
 using RI_App.Models;
 
 namespace RI_App.Controllers
 {
     public class ReportIssuesController : Controller
     {
-        private readonly ApplicationDbContext _context;
         private readonly IWebHostEnvironment _env;
 
-        public ReportIssuesController(ApplicationDbContext context, IWebHostEnvironment env)
+        // 🔹 Static in-memory list (replaces the database)
+        private static List<ReportIssue> _issues = new List<ReportIssue>();
+
+        public ReportIssuesController(IWebHostEnvironment env)
         {
-            _context = context;
             _env = env;
         }
 
@@ -26,6 +26,7 @@ namespace RI_App.Controllers
         {
             if (ModelState.IsValid)
             {
+                // Handle file upload
                 if (Attachment != null && Attachment.Length > 0)
                 {
                     var uploads = Path.Combine(_env.WebRootPath, "uploads");
@@ -40,17 +41,20 @@ namespace RI_App.Controllers
                     issue.AttachmentPath = "/uploads/" + Attachment.FileName;
                 }
 
-                _context.ReportIssues.Add(issue);
-                _context.SaveChanges();
+                // 🔹 Add to the in-memory list instead of DB
+                issue.DateReported = DateTime.Now; // set timestamp
+                _issues.Add(issue);
 
                 TempData["SuccessMessage"] = "Issue reported successfully!";
                 return RedirectToAction("Create");
             }
-
             else
             {
-                var errors = ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage);
-                Console.WriteLine(string.Join(",", errors)); // for debugging
+                // Debugging validation errors
+                var errors = ModelState.Values
+                    .SelectMany(v => v.Errors)
+                    .Select(e => e.ErrorMessage);
+                Console.WriteLine(string.Join(",", errors));
             }
 
             return View(issue);
@@ -58,11 +62,8 @@ namespace RI_App.Controllers
 
         public IActionResult Index()
         {
-            var issues = _context.ReportIssues.ToList();
-
-
-            return View(issues);
+            // 🔹 Return all issues from the in-memory list
+            return View(_issues);
         }
-
     }
 }
