@@ -61,3 +61,24 @@
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
 #*.RTF   diff=astextplain
+
+# Normalize text files to UTF-8 and LF line endings
+*.cs     text eol=lf
+*.cshtml text eol=lf
+*.css    text eol=lf
+*.js     text eol=lf
+*.json   text eol=lf
+*.html   text eol=lf
+*.txt    text eol=lf
+*.md     text eol=lf
+
+# Binary files (don’t change line endings or encodings)
+*.png    binary
+*.jpg    binary
+*.jpeg   binary
+*.gif    binary
+*.ico    binary
+*.pdf    binary
+*.dll    binary
+*.exe    binary
+

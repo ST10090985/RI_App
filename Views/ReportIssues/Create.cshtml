@@ -5,9 +5,11 @@
 }
 
 <div class="container mt-5">
+    <!-- Page Heading -->
     <h2>Report an Issue</h2>
     <hr />
 
+    <!-- Success message after form submission -->
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success">
@@ -15,13 +17,16 @@
         </div>
     }
 
+    <!-- Issue reporting form -->
     <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <!-- Location input -->
         <div class="mb-3">
             <label asp-for="Location" class="form-label"></label>
             <input asp-for="Location" class="form-control" />
             <span asp-validation-for="Location" class="text-danger"></span>
         </div>
 
+        <!-- Category dropdown -->
         <div class="mb-3">
             <label asp-for="Category" class="form-label"></label>
             <select asp-for="Category" class="form-select">
@@ -33,23 +38,27 @@
             <span asp-validation-for="Category" class="text-danger"></span>
         </div>
 
+        <!-- Description field -->
         <div class="mb-3">
             <label asp-for="Description" class="form-label"></label>
             <textarea asp-for="Description" class="form-control" rows="4"></textarea>
             <span asp-validation-for="Description" class="text-danger"></span>
         </div>
 
+        <!-- File upload for attachments -->
         <div class="mb-3">
             <label class="form-label">Attach File</label>
             <input type="file" name="Attachment" class="form-control" />
         </div>
 
+        <!-- Submit and navigation buttons -->
         <button type="submit" class="btn btn-success">Submit</button>
         <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Main Menu</a>
     </form>
 </div>
 
 @section Scripts {
+    @* Client-side validation scripts *@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }

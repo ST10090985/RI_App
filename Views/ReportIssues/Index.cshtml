@@ -8,6 +8,7 @@
 }
 else
 {
+    <!-- Table of reported issues -->
     <table class="table table-striped table-bordered">
         <thead class="table-dark">
             <tr>
@@ -19,6 +20,7 @@ else
             </tr>
         </thead>
         <tbody>
+            @* Loop through each reported issue and display details *@
             @foreach (var issue in Model)
             {
                 <tr>
@@ -27,6 +29,7 @@ else
                     <td>@issue.Description</td>
                     <td>@issue.DateReported.ToString("g")</td>
                     <td>
+                        @* If an attachment exists, show a text name to view it *@
                         @if (!string.IsNullOrEmpty(issue.AttachmentPath))
                         {
                             var fileName = System.IO.Path.GetFileName(issue.AttachmentPath);

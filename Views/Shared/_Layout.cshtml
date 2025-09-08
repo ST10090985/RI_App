@@ -56,13 +56,13 @@
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 
-    <!-- Dark/Light Mode Script -->
+    <!-- ADDED: Dark/Light Mode Script -->
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const toggleBtn = document.getElementById("theme-toggle");
             const body = document.body;
 
-            // Load saved preference
+            // Load saved theme preference
             if (localStorage.getItem("theme") === "dark") {
                 body.classList.add("dark-mode");
                 toggleBtn.textContent = "☀️ Light Mode";

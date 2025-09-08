@@ -15,12 +15,16 @@ namespace RI_App.Controllers
             _env = env;
         }
 
+        // GET: /ReportIssues/Create
+        // Shows the form where a user can report a new issue
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
+        // POST: /ReportIssues/Create
+        // Handles form submission for new issue reports
         [HttpPost]
         public IActionResult Create(ReportIssue issue, IFormFile Attachment)
         {
@@ -29,6 +33,7 @@ namespace RI_App.Controllers
                 // Handle file upload
                 if (Attachment != null && Attachment.Length > 0)
                 {
+                    // Save uploaded files under wwwroot/uploads
                     var uploads = Path.Combine(_env.WebRootPath, "uploads");
                     if (!Directory.Exists(uploads))
                         Directory.CreateDirectory(uploads);
@@ -38,6 +43,8 @@ namespace RI_App.Controllers
                     {
                         Attachment.CopyTo(stream);
                     }
+
+                    // Store relative path in database
                     issue.AttachmentPath = "/uploads/" + Attachment.FileName;
                 }
 
@@ -45,6 +52,7 @@ namespace RI_App.Controllers
                 issue.DateReported = DateTime.Now; // set timestamp
                 _issues.Add(issue);
 
+                // Show a confirmation message when redirected back to form
                 TempData["SuccessMessage"] = "Issue reported successfully!";
                 return RedirectToAction("Create");
             }
@@ -57,9 +65,12 @@ namespace RI_App.Controllers
                 Console.WriteLine(string.Join(",", errors));
             }
 
+            // If model validation failed, redisplay form with entered values
             return View(issue);
         }
 
+        // GET: /ReportIssues/Index
+        // Displays a list of all reported issues in a table
         public IActionResult Index()
         {
             // 🔹 Return all issues from the in-memory list
