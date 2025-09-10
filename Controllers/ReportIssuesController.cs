@@ -7,7 +7,7 @@ namespace RI_App.Controllers
     {
         private readonly IWebHostEnvironment _env;
 
-        // 🔹 Static in-memory list (replaces the database)
+        // Static in-memory list (replaces the database)
         private static List<ReportIssue> _issues = new List<ReportIssue>();
 
         public ReportIssuesController(IWebHostEnvironment env)
