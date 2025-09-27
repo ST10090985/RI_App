@@ -26,7 +26,7 @@ namespace RI_App.Controllers
         // POST: /ReportIssues/Create
         // Handles form submission for new issue reports
         [HttpPost]
-        public IActionResult Create(ReportIssue issue, IFormFile Attachment)
+        public IActionResult Create(ReportIssue issue, IFormFile? Attachment)
         {
             if (ModelState.IsValid)
             {

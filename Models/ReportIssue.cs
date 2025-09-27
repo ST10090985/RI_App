@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace RI_App.Models
@@ -16,7 +17,7 @@ namespace RI_App.Models
         [Required(ErrorMessage = "Description is required")]
         public string? Description { get; set; }
 
-        public string? AttachmentPath { get; set; }
+        public string? AttachmentPath { get; set; } = string.Empty;
 
         public DateTime DateReported { get; set; } = DateTime.Now;
     }

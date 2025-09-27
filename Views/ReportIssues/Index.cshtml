@@ -35,6 +35,10 @@ else
                             var fileName = System.IO.Path.GetFileName(issue.AttachmentPath);
                             <a href="@issue.AttachmentPath" target="_blank">@fileName</a>
                         }
+                        else
+                        {
+                            <span class="text-muted">No attachment</span>
+                        }
                     </td>
                 </tr>
             }
