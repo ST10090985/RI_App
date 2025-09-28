@@ -1,10 +1,15 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RI_App.DataStructure;
 using RI_App.Models;
 
 namespace RI_App.Controllers
 {
     public class ReportIssuesController : Controller
     {
+
+        private readonly ReportIssueQueue _reportQueue;
+
+
         private readonly IWebHostEnvironment _env;
 
         // Static in-memory list (replaces the database)
@@ -68,6 +73,26 @@ namespace RI_App.Controllers
             // If model validation failed, redisplay form with entered values
             return View(issue);
         }
+
+
+        [HttpPost]
+        public IActionResult AddIssue(ReportIssue issue)
+        {
+            if (ModelState.IsValid)
+            {
+                _reportQueue.Add(issue);
+                return RedirectToAction("Index");
+            }
+
+            return View(issue);
+        }
+
+        public IActionResult ListIssues()
+        {
+            var issues = _reportQueue.GetEvents();
+            return View(issues);
+        }
+
 
         // GET: /ReportIssues/Index
         // Displays a list of all reported issues in a table

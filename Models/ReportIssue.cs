@@ -17,8 +17,10 @@ namespace RI_App.Models
         [Required(ErrorMessage = "Description is required")]
         public string? Description { get; set; }
 
+        // For uploaded file (from form)
+        public IFormFile? Attachment { get; set; }
         public string? AttachmentPath { get; set; } = string.Empty;
 
-        public DateTime DateReported { get; set; } = DateTime.Now;
+        public DateTime DateReported { get; set; } = DateTime.UtcNow;
     }
 }
