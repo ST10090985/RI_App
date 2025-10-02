@@ -1,10 +1,15 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using RI_App.Models;
+using RI_App.DataStructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// ✅ Register ReportIssueQueue as a singleton
+// This ensures the queue persists in memory across requests
+builder.Services.AddSingleton<ReportIssueQueue>();
 
 var app = builder.Build();
 
@@ -12,7 +17,6 @@ var app = builder.Build();
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
@@ -23,6 +27,7 @@ app.UseRouting();
 
 app.UseAuthorization();
 
+// Default route
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
