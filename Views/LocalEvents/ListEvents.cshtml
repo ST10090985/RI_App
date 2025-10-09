@@ -1,4 +1,6 @@
-﻿@model IEnumerable<RI_App.Models.LocalEvent>
+﻿@using System.Linq
+@model IEnumerable<RI_App.Models.LocalEvent>
+
 @{
     ViewData["Title"] = "Local Events and Announcements";
 }
@@ -6,42 +8,39 @@
 <div class="container mt-4">
     <h2 class="mb-4 text-center">Local Events and Announcements</h2>
 
-    <!-- ✅ Add Event Button -->
+    <!-- Add Event button -->
     <div class="mb-3 text-end">
-        <a asp-action="AddEvent" asp-controller="LocalEvents" class="btn btn-success">➕ Add New Event</a>
+        <a asp-controller="LocalEvents" asp-action="AddEvent" class="btn btn-success">
+            <i class="bi bi-plus-circle"></i> Add New Event
+        </a>
     </div>
 
-    <!-- 🔍 Search Section -->
-    <form method="get" asp-action="ListEvents" class="row g-3 mb-4">
-        <div class="col-md-4">
-            <label class="form-label fw-bold">Filter by Category</label>
-            <select name="category" class="form-select">
-                <option value="">All Categories</option>
-                @foreach (var category in ViewBag.Categories as IEnumerable<string>)
-                {
-                    <option value="@category">@category</option>
-                }
-            </select>
+    <!-- 🔍 Search Form -->
+    <form asp-controller="LocalEvents" asp-action="ListEvents" method="get" class="row g-3 mb-4">
+        <div class="col-md-6">
+            <label for="category" class="form-label">Search by Category</label>
+            <input type="text" name="category" id="category" value="@Context.Request.Query["category"]"
+                   class="form-control" placeholder="Type a category (e.g., Sanitation, Roads, Utilities)" />
         </div>
 
         <div class="col-md-4">
-            <label class="form-label fw-bold">Filter by Date</label>
-            <input type="date" name="date" class="form-control" />
+            <label for="date" class="form-label">Search by Date</label>
+            <input type="date" name="date" id="date" value="@Context.Request.Query["date"]" class="form-control" />
         </div>
 
-        <div class="col-md-4 d-flex align-items-end">
+        <div class="col-md-2 d-flex align-items-end">
             <button type="submit" class="btn btn-primary w-100">Search</button>
         </div>
     </form>
 
-    <!-- 📅 Event List -->
+    <!-- ✅ Results Table -->
     @if (Model == null || !Model.Any())
     {
-        <p class="text-muted text-center">No events found for the selected filters.</p>
+        <p class="text-muted text-center">No matching events found.</p>
     }
     else
     {
-        <table class="table table-bordered table-striped">
+        <table class="table table-striped table-bordered align-middle">
             <thead class="table-dark">
                 <tr>
                     <th>Title</th>
@@ -57,24 +56,24 @@
                         <td>@ev.Title</td>
                         <td>@ev.Category</td>
                         <td>@ev.Description</td>
-                        <td>@ev.Date.ToString("yyyy-MM-dd")</td>
+                        <td>@ev.Date.ToString("dd MMM yyyy")</td>
                     </tr>
                 }
             </tbody>
         </table>
     }
 
-    <!-- 💡 Recommended Events Section -->
+    <!-- 💡 Recommendations Section -->
     @if (ViewBag.Recommendations != null && ((IEnumerable<RI_App.Models.LocalEvent>)ViewBag.Recommendations).Any())
     {
         <div class="mt-5">
-            <h4 class="text-info">Recommended Events (Based on Recent Searches)</h4>
+            <h4>Recommended Events (Based on Recent Searches)</h4>
             <ul class="list-group">
-                @foreach (var ev in ViewBag.Recommendations as IEnumerable<RI_App.Models.LocalEvent>)
+                @foreach (var rec in (IEnumerable<RI_App.Models.LocalEvent>)ViewBag.Recommendations)
                 {
                     <li class="list-group-item">
-                        <strong>@ev.Title</strong> — @ev.Category
-                        <span class="text-muted float-end">@ev.Date.ToString("yyyy-MM-dd")</span>
+                        <strong>@rec.Title</strong> — @rec.Category
+                        <span class="text-muted">(@rec.Date.ToString("dd MMM"))</span>
                     </li>
                 }
             </ul>
