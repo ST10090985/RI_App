@@ -1,0 +1,83 @@
+﻿@model IEnumerable<RI_App.Models.LocalEvent>
+@{
+    ViewData["Title"] = "Local Events and Announcements";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Local Events and Announcements</h2>
+
+    <!-- ✅ Add Event Button -->
+    <div class="mb-3 text-end">
+        <a asp-action="AddEvent" asp-controller="LocalEvents" class="btn btn-success">➕ Add New Event</a>
+    </div>
+
+    <!-- 🔍 Search Section -->
+    <form method="get" asp-action="ListEvents" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Filter by Category</label>
+            <select name="category" class="form-select">
+                <option value="">All Categories</option>
+                @foreach (var category in ViewBag.Categories as IEnumerable<string>)
+                {
+                    <option value="@category">@category</option>
+                }
+            </select>
+        </div>
+
+        <div class="col-md-4">
+            <label class="form-label fw-bold">Filter by Date</label>
+            <input type="date" name="date" class="form-control" />
+        </div>
+
+        <div class="col-md-4 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </form>
+
+    <!-- 📅 Event List -->
+    @if (Model == null || !Model.Any())
+    {
+        <p class="text-muted text-center">No events found for the selected filters.</p>
+    }
+    else
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Title</th>
+                    <th>Category</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var ev in Model)
+                {
+                    <tr>
+                        <td>@ev.Title</td>
+                        <td>@ev.Category</td>
+                        <td>@ev.Description</td>
+                        <td>@ev.Date.ToString("yyyy-MM-dd")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+
+    <!-- 💡 Recommended Events Section -->
+    @if (ViewBag.Recommendations != null && ((IEnumerable<RI_App.Models.LocalEvent>)ViewBag.Recommendations).Any())
+    {
+        <div class="mt-5">
+            <h4 class="text-info">Recommended Events (Based on Recent Searches)</h4>
+            <ul class="list-group">
+                @foreach (var ev in ViewBag.Recommendations as IEnumerable<RI_App.Models.LocalEvent>)
+                {
+                    <li class="list-group-item">
+                        <strong>@ev.Title</strong> — @ev.Category
+                        <span class="text-muted float-end">@ev.Date.ToString("yyyy-MM-dd")</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    }
+</div>

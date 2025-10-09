@@ -7,9 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// ✅ Register ReportIssueQueue as a singleton
+// Register ReportIssueQueue as a singleton
 // This ensures the queue persists in memory across requests
 builder.Services.AddSingleton<ReportIssueQueue>();
+// Register LocalEventManager as a singleton
+// This ensures the event persists in memory across requests
+builder.Services.AddSingleton<LocalEventManager>();
+
 
 var app = builder.Build();
 
