@@ -14,7 +14,7 @@ namespace RI_App.Controllers
         // Keep track of recent searches to generate recommendations
         private static readonly Stack<string> _recentSearches = new Stack<string>();
 
-        // ✅ Display list of events + search + recommendations
+        // Display list of events + search + recommendations
         [HttpGet]
         public IActionResult ListEvents(string? category, DateTime? date)
         {
@@ -38,7 +38,7 @@ namespace RI_App.Controllers
                 events = _localEventManager.GetAllEvents();
             }
 
-            // ✅ Generate recommendations based on previous search patterns
+            // Generate recommendations based on previous search patterns
             var recommended = new List<LocalEvent>();
             if (_recentSearches.Any())
             {
@@ -57,7 +57,7 @@ namespace RI_App.Controllers
             return View(events);
         }
 
-        // ✅ Add Event Page
+        // Add Event Page
         [HttpGet]
         public IActionResult AddEvent()
         {
@@ -65,7 +65,7 @@ namespace RI_App.Controllers
             return View();
         }
 
-        // ✅ Add Event POST
+        // Add Event POST
         [HttpPost]
         [ValidateAntiForgeryToken]
         public IActionResult AddEvent(LocalEvent newEvent)

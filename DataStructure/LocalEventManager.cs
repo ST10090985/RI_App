@@ -74,7 +74,7 @@ namespace RI_App.DataStructure
                 .ToList();
         }
 
-        // 🔍 Search by category and/or date
+        //  Search by category and/or date
         public IEnumerable<LocalEvent> Search(string? category, DateTime? date)
         {
             if (!string.IsNullOrEmpty(category))
@@ -91,7 +91,7 @@ namespace RI_App.DataStructure
             return results;
         }
 
-        // 🌱 Seed dummy data
+        // Seed dummy data
         private void SeedDummyData()
         {
             var dummyEvents = new List<LocalEvent>
