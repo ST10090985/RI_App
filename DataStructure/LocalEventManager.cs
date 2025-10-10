@@ -52,8 +52,14 @@ namespace RI_App.DataStructure
                 return Enumerable.Empty<LocalEvent>();
 
             string lastCategory = _recentSearches.Peek();
-            return GetEventsByCategory(lastCategory).Take(3);
+
+            // Recommend upcoming events in the same category
+            return GetEventsByCategory(lastCategory)
+                .Where(e => e.Date >= DateTime.Today && e.Date <= DateTime.Today.AddDays(7))
+                .OrderBy(e => e.Date)
+                .Take(3);
         }
+
 
         // Get events filtered by category
         public IEnumerable<LocalEvent> GetEventsByCategory(string category)

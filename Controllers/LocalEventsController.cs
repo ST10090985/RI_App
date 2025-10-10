@@ -24,31 +24,14 @@ namespace RI_App.Controllers
             if (!string.IsNullOrEmpty(category) || date.HasValue)
             {
                 events = _localEventManager.Search(category, date);
-
-                // Record category searches for recommendations
-                if (!string.IsNullOrEmpty(category))
-                {
-                    _recentSearches.Push(category);
-                    if (_recentSearches.Count > 5)
-                        _recentSearches.Pop(); // keep recent 5
-                }
             }
             else
             {
                 events = _localEventManager.GetAllEvents();
             }
 
-            // Generate recommendations based on previous search patterns
-            var recommended = new List<LocalEvent>();
-            if (_recentSearches.Any())
-            {
-                var recentCategory = _recentSearches.Peek();
-                recommended = _localEventManager
-                    .GetEventsByCategory(recentCategory)
-                    .Where(e => e.Date >= DateTime.Today)
-                    .Take(3)
-                    .ToList();
-            }
+            // Use data structure's built-in recommendation logic
+            var recommended = _localEventManager.GetRecommendedEvents();
 
             // Pass categories and recommendations to view
             ViewBag.Categories = _localEventManager.GetCategories();
@@ -56,6 +39,7 @@ namespace RI_App.Controllers
 
             return View(events);
         }
+
 
         // Add Event Page
         [HttpGet]
