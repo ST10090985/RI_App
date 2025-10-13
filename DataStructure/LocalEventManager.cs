@@ -143,6 +143,13 @@ namespace RI_App.DataStructure
                     Category = "Utilities",
                     Description = "Upgrading power lines in the industrial zone.",
                     Date = DateTime.Now.AddDays(8)
+                },
+                new LocalEvent
+                {
+                    Title = "Water Pipe Maintenance",
+                    Category = "Sanitation",
+                    Description = "Scheduled water supply maintenance in the central area.",
+                    Date = DateTime.Now.AddDays(12)
                 }
             };
 
