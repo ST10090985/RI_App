@@ -1,0 +1,63 @@
+﻿@model RI_App.Models.ServiceRequest
+
+@{
+    ViewData["Title"] = "Create Service Request";
+}
+
+<div class="container mt-5">
+    <!-- Page Heading -->
+    <h2>Create a Service Request</h2>
+    <hr />
+
+    <!-- Success message after form submission -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    <!-- Service Request form -->
+    <form asp-action="Create" method="post">
+
+        <!-- Title input -->
+        <div class="mb-3">
+            <label asp-for="Title" class="form-label"></label>
+            <input asp-for="Title" class="form-control" />
+            <span asp-validation-for="Title" class="text-danger"></span>
+        </div>
+
+        <!-- Description field -->
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label"></label>
+            <textarea asp-for="Description" class="form-control" rows="4"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <!-- Priority selection -->
+        <div class="form-group mt-3">
+            <label for="Priority">Priority</label>
+            <select asp-for="Priority" class="form-control">
+                <option value="1">Low</option>
+                <option value="2">Medium</option>
+                <option value="3">High</option>
+            </select>
+        </div>
+
+                
+        <!-- Submit and navigation buttons -->
+        <div class="mt-4">
+            <button type="submit" class="btn btn-success">Submit</button>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-secondary">Back to Main Menu</a>
+        </div>
+
+
+    </form>
+</div>
+
+@section Scripts {
+    @* Client-side validation scripts *@
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -1,0 +1,31 @@
+﻿@model IEnumerable<RI_App.Models.ServiceRequest>
+
+@{
+    ViewData["Title"] = "Priority Queue";
+}
+
+<div class="container mt-5">
+    <h2>Service Requests by Priority</h2>
+    <hr />
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Priority</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var req in Model)
+            {
+                <tr>
+                    <td>@req.Id</td>
+                    <td>@req.Description</td>
+                    <td>@req.Priority</td>
+                    <td>@req.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

@@ -10,7 +10,7 @@ namespace RI_App.DataStructure
 
         public ReportIssueQueue(IWebHostEnvironment env)
         {
-            // Ensure files are saved in wwwroot/uploads
+            // Ensure uploads folder exists
             _uploadPath = Path.Combine(env.WebRootPath, "uploads");
             if (!Directory.Exists(_uploadPath))
             {
@@ -18,11 +18,12 @@ namespace RI_App.DataStructure
             }
         }
 
+        // Adds a new issue to the list (acts like enqueue)
         public void Add(ReportIssue issue)
         {
             issue.Id = _nextId++;
 
-            // Save attachment if uploaded
+            // Save attachment if available
             if (issue.Attachment != null && issue.Attachment.Length > 0)
             {
                 string uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(issue.Attachment.FileName)}";
@@ -33,26 +34,30 @@ namespace RI_App.DataStructure
                     issue.Attachment.CopyTo(stream);
                 }
 
-                // Save relative path for later retrieval
                 issue.AttachmentPath = $"/uploads/{uniqueFileName}";
             }
 
             _issues.Add(issue);
 
-            // Sort by date reported
+            // Keep list sorted by date (oldest first)
             _issues.Sort((a, b) => a.DateReported.CompareTo(b.DateReported));
         }
 
-        public List<ReportIssue> GetEvents() => _issues.ToList();
+        // Returns all issues currently stored
+        public List<ReportIssue> GetAll() => _issues.ToList();
 
-        public ReportIssue? Peek() => _issues.Count > 0 ? _issues[0] : null;
+        // Gets the next issue in line (peek)
+        public ReportIssue? Peek() => _issues.FirstOrDefault();
 
-        public ReportIssue? RemoveHighestPriority()
+        // Removes the first issue (dequeue)
+        public ReportIssue? RemoveNext()
         {
             if (_issues.Count == 0) return null;
-            var highest = _issues[0];
+            var next = _issues[0];
             _issues.RemoveAt(0);
-            return highest;
+            return next;
         }
+
+      
     }
 }
