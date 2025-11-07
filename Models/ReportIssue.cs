@@ -17,6 +17,10 @@ namespace RI_App.Models
         [Required(ErrorMessage = "Description is required")]
         public string? Description { get; set; }
 
+        [Required]
+        public string Status { get; set; } = "Pending";
+
+
         // For uploaded file (from form)
         public IFormFile? Attachment { get; set; }
         public string? AttachmentPath { get; set; } = string.Empty;
