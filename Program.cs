@@ -13,6 +13,10 @@ builder.Services.AddSingleton<ReportIssueQueue>();
 // Register LocalEventManager as a singleton
 // This ensures the event persists in memory across requests
 builder.Services.AddSingleton<LocalEventManager>();
+// Register ServiceRequestTree as a singleton
+// This ensures the tree persists in memory across requests
+builder.Services.AddSingleton<ServiceRequestTree>();
+
 
 
 var app = builder.Build();

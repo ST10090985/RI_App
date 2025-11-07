@@ -39,7 +39,7 @@ namespace RI_App.Controllers
         // GET: /ReportIssues/ListIssues
         public IActionResult ListIssues()
         {
-            var issues = _reportQueue.GetEvents();
+            var issues = _reportQueue.GetAll();
             return View(issues);
         }
     }
