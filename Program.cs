@@ -15,6 +15,8 @@ builder.Services.AddSingleton<ReportIssueQueue>();
 builder.Services.AddSingleton<LocalEventManager>();
 
 
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
