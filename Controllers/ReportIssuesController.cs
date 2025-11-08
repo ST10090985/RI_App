@@ -29,6 +29,7 @@ namespace RI_App.Controllers
         // POST: /ReportIssues/Create
         // Handles form submission and adds a new issue to the in-memory queue.
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(ReportIssue issue)
         {
             if (ModelState.IsValid)
@@ -38,7 +39,7 @@ namespace RI_App.Controllers
 
                 // Show confirmation message
                 TempData["SuccessMessage"] = "Issue reported successfully!";
-                return RedirectToAction("Create");
+                return RedirectToAction(nameof(Create));
             }
 
             // If validation fails, show form again with errors
