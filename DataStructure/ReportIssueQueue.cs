@@ -1,138 +1,213 @@
 ﻿using RI_App.Models;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace RI_App.DataStructure
 {
-    /// <summary>
-    /// The ReportIssueQueue class acts as an in-memory data structure
-    /// that stores and manages all reported issues using a Queue-like behavior.
-    /// It supports adding, retrieving, updating, and sorting issues,
-    /// as well as optional file uploads.
-    /// </summary>
     public class ReportIssueQueue
     {
-        private readonly string _uploadPath;
-        private readonly List<ReportIssue> _issues = new();
-        private int _nextId = 1;
+        // ===============================
+        // === Internal Data Structures ===
+        // ===============================
 
-        public ReportIssueQueue(IWebHostEnvironment env)
-        {
-            // Define the folder where attachments will be saved
-            _uploadPath = Path.Combine(env.WebRootPath, "uploads");
+        private Queue<ReportIssue> _queue = new Queue<ReportIssue>();
+        private BinarySearchTree _bst = new BinarySearchTree();
+        private MinHeap _heap = new MinHeap();
+        private Graph _graph = new Graph();
 
-            // Ensure that the uploads folder exists
-            if (!Directory.Exists(_uploadPath))
-                Directory.CreateDirectory(_uploadPath);
-        }
+        private int _nextId = 1; // auto-increment integer ID
 
-        /// <summary>
-        /// Adds a new issue to the list (acts like an Enqueue operation).
-        /// Handles unique ID generation, status initialization, 
-        /// and file attachment storage if available.
-        /// </summary>
-        public void Add(ReportIssue issue)
+        // ===============================
+        // === Wrapper Methods (Public) ===
+        // ===============================
+
+        // Add new issue
+        public void AddIssue(ReportIssue issue)
         {
             issue.Id = _nextId++;
+            issue.DateReported = DateTime.Now;
             issue.Status = "Pending";
-            issue.DateReported = DateTime.UtcNow;
 
-            // Handle attachment upload (optional)
-            if (issue.Attachment != null && issue.Attachment.Length > 0)
+            // Store in multiple structures
+            _queue.Enqueue(issue);
+            _bst.Insert(issue);
+            _heap.Insert(issue);
+            _graph.AddIssue(issue);
+        }
+
+        // Retrieve all issues (by insertion order)
+        public IEnumerable<ReportIssue> GetAllIssues()
+        {
+            return _queue.ToList();
+        }
+
+        // Retrieve issue by ID
+        public ReportIssue GetById(int id)
+        {
+            return _queue.FirstOrDefault(i => i.Id == id);
+        }
+
+        // Update issue status
+        public void UpdateStatus(int id, string newStatus)
+        {
+            var issue = _queue.FirstOrDefault(i => i.Id == id);
+            if (issue != null)
             {
-                string uniqueFileName = $"{Guid.NewGuid()}_{Path.GetFileName(issue.Attachment.FileName)}";
-                string filePath = Path.Combine(_uploadPath, uniqueFileName);
-
-                using (var stream = new FileStream(filePath, FileMode.Create))
-                    issue.Attachment.CopyTo(stream);
-
-                // Store the relative path for display
-                issue.AttachmentPath = $"/uploads/{uniqueFileName}";
+                issue.Status = newStatus;
             }
-
-            // Add to in-memory list
-            _issues.Add(issue);
-
-            // Keep list ordered by date (oldest first)
-            _issues.Sort((a, b) => a.DateReported.CompareTo(b.DateReported));
         }
 
-        /// <summary>
-        /// Returns all stored issues as a list.
-        /// </summary>
-        public List<ReportIssue> GetAll() => _issues.ToList();
-
-        /// <summary>
-        /// Returns the first issue in the queue (Peek operation).
-        /// </summary>
-        public ReportIssue? Peek() => _issues.FirstOrDefault();
-
-        /// <summary>
-        /// Removes the oldest issue from the queue (Dequeue operation).
-        /// </summary>
-        public ReportIssue? RemoveNext()
+        // Recommended issues (Graph-based)
+        public IEnumerable<ReportIssue> RecommendRelated(string category)
         {
-            if (_issues.Count == 0) return null;
-
-            var next = _issues[0];
-            _issues.RemoveAt(0);
-            return next;
+            return _graph.GetRelatedIssues(category);
         }
 
-        /// <summary>
-        /// Updates the status of an existing issue.
-        /// Returns true if the update was successful.
-        /// </summary>
-        public bool UpdateStatus(int id, string newStatus)
+        // Get highest priority issue (Heap-based)
+        public ReportIssue GetNextPriorityIssue()
         {
-            var issue = _issues.FirstOrDefault(i => i.Id == id);
-            if (issue == null) return false;
-
-            issue.Status = newStatus;
-            return true;
+            return _heap.ExtractMin();
         }
 
-        /// <summary>
-        /// Returns all issues with a specific status (e.g., "Pending").
-        /// </summary>
-        public List<ReportIssue> GetByStatus(string status)
+        // Retrieve issues sorted by Date using BST
+        public List<ReportIssue> GetIssuesSortedByDate()
         {
-            return _issues
-                .Where(i => i.Status.Equals(status, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            return _bst.InOrderTraversal();
+        }
+    }
+
+    // ======================================
+    // === Binary Search Tree (by Date) ===
+    // ======================================
+    public class BinarySearchTree
+    {
+        private class Node
+        {
+            public ReportIssue Data;
+            public Node Left;
+            public Node Right;
+
+            public Node(ReportIssue data)
+            {
+                Data = data;
+            }
         }
 
-        /// <summary>
-        /// Returns all issues in a specific category (e.g., "Water", "Electricity").
-        /// </summary>
-        public List<ReportIssue> GetByCategory(string category)
+        private Node root;
+
+        public void Insert(ReportIssue issue)
         {
-            return _issues
-                .Where(i => i.Category != null &&
-                            i.Category.Equals(category, StringComparison.OrdinalIgnoreCase))
-                .ToList();
+            root = InsertRec(root, issue);
         }
 
-        /// <summary>
-        /// Returns all issues reported after a certain date.
-        /// </summary>
-        public List<ReportIssue> GetByDate(DateTime fromDate)
+        private Node InsertRec(Node root, ReportIssue issue)
         {
-            return _issues
-                .Where(i => i.DateReported >= fromDate)
-                .OrderBy(i => i.DateReported)
-                .ToList();
+            if (root == null)
+                return new Node(issue);
+
+            if (issue.DateReported < root.Data.DateReported)
+                root.Left = InsertRec(root.Left, issue);
+            else
+                root.Right = InsertRec(root.Right, issue);
+
+            return root;
         }
 
-        /// <summary>
-        /// Returns the highest priority issue (based on category or date).
-        /// This can simulate a "Priority Queue" structure.
-        /// </summary>
-        public ReportIssue? GetHighestPriorityIssue()
+        public List<ReportIssue> InOrderTraversal()
         {
-            // Example: prioritize based on category keyword (e.g., "Emergency" or "Power")
-            return _issues
-                .OrderByDescending(i => i.Category?.Contains("Emergency") ?? false)
-                .ThenBy(i => i.DateReported)
-                .FirstOrDefault();
+            var list = new List<ReportIssue>();
+            InOrder(root, list);
+            return list;
+        }
+
+        private void InOrder(Node node, List<ReportIssue> list)
+        {
+            if (node == null) return;
+            InOrder(node.Left, list);
+            list.Add(node.Data);
+            InOrder(node.Right, list);
+        }
+    }
+
+    // ======================================
+    // === Min-Heap (earliest issue first) ===
+    // ======================================
+    public class MinHeap
+    {
+        private List<ReportIssue> _heap = new List<ReportIssue>();
+
+        private int Parent(int i) => (i - 1) / 2;
+        private int Left(int i) => 2 * i + 1;
+        private int Right(int i) => 2 * i + 2;
+
+        public void Insert(ReportIssue issue)
+        {
+            _heap.Add(issue);
+            int i = _heap.Count - 1;
+            while (i > 0 && _heap[Parent(i)].DateReported > _heap[i].DateReported)
+            {
+                Swap(i, Parent(i));
+                i = Parent(i);
+            }
+        }
+
+        public ReportIssue ExtractMin()
+        {
+            if (_heap.Count == 0) return null;
+            ReportIssue root = _heap[0];
+            _heap[0] = _heap[^1];
+            _heap.RemoveAt(_heap.Count - 1);
+            Heapify(0);
+            return root;
+        }
+
+        private void Heapify(int i)
+        {
+            int smallest = i;
+            int l = Left(i);
+            int r = Right(i);
+
+            if (l < _heap.Count && _heap[l].DateReported < _heap[smallest].DateReported)
+                smallest = l;
+            if (r < _heap.Count && _heap[r].DateReported < _heap[smallest].DateReported)
+                smallest = r;
+
+            if (smallest != i)
+            {
+                Swap(i, smallest);
+                Heapify(smallest);
+            }
+        }
+
+        private void Swap(int i, int j)
+        {
+            var temp = _heap[i];
+            _heap[i] = _heap[j];
+            _heap[j] = temp;
+        }
+    }
+
+    // ======================================
+    // === Graph (category-based links) ===
+    // ======================================
+    public class Graph
+    {
+        private Dictionary<string, List<ReportIssue>> _adjacencyList = new();
+
+        public void AddIssue(ReportIssue issue)
+        {
+            if (!_adjacencyList.ContainsKey(issue.Category))
+                _adjacencyList[issue.Category] = new List<ReportIssue>();
+
+            _adjacencyList[issue.Category].Add(issue);
+        }
+
+        public IEnumerable<ReportIssue> GetRelatedIssues(string category)
+        {
+            if (_adjacencyList.ContainsKey(category))
+                return _adjacencyList[category];
+            return new List<ReportIssue>();
         }
     }
 }

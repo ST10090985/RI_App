@@ -19,6 +19,9 @@ namespace RI_App.Models
 
         public string? Status { get; set; } = "Pending";
 
+        public int? Priority { get; set; } = 0; // 0 = normal, higher = more urgent
+
+
 
         // For uploaded file (from form)
         public IFormFile? Attachment { get; set; }
