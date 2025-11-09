@@ -8,69 +8,121 @@ namespace RI_App.Controllers
     {
         private readonly ReportIssueQueue _reportQueue;
 
-        // Inject the queue (in-memory)
+        // Inject our data structure (singleton registered in Program.cs)
         public ReportIssuesController(ReportIssueQueue reportQueue)
         {
             _reportQueue = reportQueue;
         }
 
-        // GET: /ReportIssues/Create
+        // ==============================
+        // List All Reported Issues
+        // ==============================
+        [HttpGet]
+        public IActionResult ListIssues()
+        {
+            var issues = _reportQueue.GetAllIssues();
+            return View(issues);
+        }
+
+        // ==============================
+        // Show Create Issue Page
+        // ==============================
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: /ReportIssues/Create
+        // ==============================
+        // Submit New Issue
+        // ==============================
         [HttpPost]
-        public IActionResult Create(ReportIssue issue)
+        [ValidateAntiForgeryToken]
+        public IActionResult Create(ReportIssue issue, IFormFile? attachment)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                _reportQueue.AddIssue(issue); // ✅ updated method name
-
-                TempData["SuccessMessage"] = "Issue reported successfully!";
-                return RedirectToAction("Create");
+                TempData["ErrorMessage"] = "Invalid issue details. Please try again.";
+                return View(issue);
             }
 
-            return View(issue);
+            // Handle attachment upload
+            if (attachment != null && attachment.Length > 0)
+            {
+                var filePath = Path.Combine("wwwroot/uploads", attachment.FileName);
+                using (var stream = new FileStream(filePath, FileMode.Create))
+                {
+                    attachment.CopyTo(stream);
+                }
+                issue.AttachmentPath = "/uploads/" + attachment.FileName;
+            }
+
+            // Set defaults
+            issue.DateReported = DateTime.Now;
+            issue.Status = "Pending";
+
+            // Add issue to all data structures
+            _reportQueue.AddIssue(issue);
+
+            TempData["SuccessMessage"] = "Issue reported successfully!";
+            return RedirectToAction("ListIssues");
         }
 
-        // GET: /ReportIssues/ListIssues
-        [HttpGet]
-        public IActionResult ListIssues()
+        // ==============================
+        // Remove Highest Priority Issue
+        // ==============================
+        [HttpPost]
+        public IActionResult RemoveHighestPriority()
         {
-            var issues = _reportQueue.GetAllIssues(); // ✅ updated method name
-            return View(issues);
+            var removed = _reportQueue.RemoveHighestPriorityIssue();
+
+            if (removed != null)
+                TempData["SuccessMessage"] = $"Removed highest priority issue from {removed.Location}.";
+            else
+                TempData["ErrorMessage"] = "No issues available to remove.";
+
+            return RedirectToAction("ListIssues");
         }
 
-        // POST: /ReportIssues/UpdateStatus
+        // ==============================
+        // Update Issue Priority
+        // ==============================
+        [HttpPost]
+        public IActionResult UpdatePriority(int id, int newPriority)
+        {
+            bool updated = _reportQueue.UpdatePriority(id, newPriority);
+
+            if (updated)
+                TempData["SuccessMessage"] = "Issue priority updated successfully.";
+            else
+                TempData["ErrorMessage"] = "Could not update issue priority.";
+
+            return RedirectToAction("ListIssues");
+        }
+
+        // ==============================
+        // Update Issue Status (Pending / Resolved)
+        // ==============================
         [HttpPost]
         public IActionResult UpdateStatus(int id, string newStatus)
         {
-            _reportQueue.UpdateStatus(id, newStatus); // ✅ method unchanged
-            TempData["SuccessMessage"] = "Issue status updated successfully!";
-            return RedirectToAction("ListIssues");
-        }
-
-        // POST: /ReportIssues/RemoveNext
-        [HttpPost]
-        public IActionResult RemoveNext()
-        {
-            var removed = _reportQueue.GetNextPriorityIssue(); // ✅ uses MinHeap
-            if (removed == null)
+            var issue = _reportQueue.GetAllIssues().FirstOrDefault(i => i.Id == id);
+            if (issue != null)
             {
-                TempData["ErrorMessage"] = "No issues available to remove.";
+                issue.Status = newStatus;
+                TempData["SuccessMessage"] = $"Issue status updated to '{newStatus}'.";
             }
             else
             {
-                TempData["SuccessMessage"] = $"Removed issue from {removed.Location}.";
+                TempData["ErrorMessage"] = "Issue not found.";
             }
 
             return RedirectToAction("ListIssues");
         }
 
-        // (Optional) – show sorted issues by date (BST)
+        // ==============================
+        // Show Issues Sorted by Date (BST)
+        // ==============================
         [HttpGet]
         public IActionResult SortedIssues()
         {
@@ -78,11 +130,14 @@ namespace RI_App.Controllers
             return View("ListIssues", sorted);
         }
 
-        // (Optional) – recommend issues by category (Graph)
+        // ==============================
+        // Recommend Related Issues (Graph)
+        // ==============================
         [HttpGet]
         public IActionResult Recommend(string category)
         {
-            var related = _reportQueue.RecommendRelated(category);
+            var related = _reportQueue.RecommendedRelated(category);
+            TempData["SuccessMessage"] = $"Showing related issues for category: {category}";
             return View("ListIssues", related);
         }
     }

@@ -1,104 +1,100 @@
-﻿using RI_App.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using RI_App.Models;
 
 namespace RI_App.DataStructure
 {
     public class ReportIssueQueue
     {
-        // ===============================
-        // === Internal Data Structures ===
-        // ===============================
+        private readonly List<ReportIssue> _issues;   // Base storage
+        private readonly IssueBST _bst;               // For sorting by date
+        private readonly IssueHeap _heap;             // For priority management
+        private readonly IssueGraph _graph;           // For category-based recommendations
 
-        private Queue<ReportIssue> _queue = new Queue<ReportIssue>();
-        private BinarySearchTree _bst = new BinarySearchTree();
-        private MinHeap _heap = new MinHeap();
-        private Graph _graph = new Graph();
+        public ReportIssueQueue()
+        {
+            _issues = new List<ReportIssue>();
+            _bst = new IssueBST();
+            _heap = new IssueHeap();
+            _graph = new IssueGraph();
+        }
 
-        private int _nextId = 1; // auto-increment integer ID
-
-        // ===============================
-        // === Wrapper Methods (Public) ===
-        // ===============================
-
-        // Add new issue
+        // ✅ Add a new issue
         public void AddIssue(ReportIssue issue)
         {
-            issue.Id = _nextId++;
-            issue.DateReported = DateTime.Now;
-            issue.Status = "Pending";
-
-            // Store in multiple structures
-            _queue.Enqueue(issue);
+            _issues.Add(issue);
             _bst.Insert(issue);
             _heap.Insert(issue);
             _graph.AddIssue(issue);
         }
 
-        // Retrieve all issues (by insertion order)
-        public IEnumerable<ReportIssue> GetAllIssues()
+        // ✅ Get all issues
+        public List<ReportIssue> GetAllIssues()
         {
-            return _queue.ToList();
+            return _issues.ToList();
         }
 
-        // Retrieve issue by ID
-        public ReportIssue GetById(int id)
+        // ✅ Remove the issue with the highest priority (Heap-based)
+        public ReportIssue RemoveHighestPriorityIssue()
         {
-            return _queue.FirstOrDefault(i => i.Id == id);
-        }
-
-        // Update issue status
-        public void UpdateStatus(int id, string newStatus)
-        {
-            var issue = _queue.FirstOrDefault(i => i.Id == id);
-            if (issue != null)
+            var removed = _heap.RemoveMax();
+            if (removed != null)
             {
-                issue.Status = newStatus;
+                _issues.Remove(removed);
+                _bst.Remove(removed);
+                _graph.RemoveIssue(removed);
             }
+            return removed;
         }
 
-        // Recommended issues (Graph-based)
-        public IEnumerable<ReportIssue> RecommendRelated(string category)
-        {
-            return _graph.GetRelatedIssues(category);
-        }
-
-        // Get highest priority issue (Heap-based)
-        public ReportIssue GetNextPriorityIssue()
-        {
-            return _heap.ExtractMin();
-        }
-
-        // Retrieve issues sorted by Date using BST
+        // ✅ Sort issues by date (BST-based)
         public List<ReportIssue> GetIssuesSortedByDate()
         {
             return _bst.InOrderTraversal();
         }
+
+        // ✅ Update the priority of an issue
+        public bool UpdatePriority(int id, int newPriority)
+        {
+            var issue = _issues.FirstOrDefault(i => i.Id == id);
+            if (issue == null) return false;
+
+            issue.Priority = newPriority;
+            _heap.RebuildHeap(_issues);
+            return true;
+        }
+
+        // ✅ Recommend issues based on category (Graph-based)
+        public List<ReportIssue> RecommendedRelated(string category)
+        {
+            return _graph.GetRelatedIssues(category);
+        }
     }
 
-    // ======================================
-    // === Binary Search Tree (by Date) ===
-    // ======================================
-    public class BinarySearchTree
+    // ======================================================
+    // =============== Supporting Data Structures ============
+    // ======================================================
+
+    // -------- Binary Search Tree for sorting by date --------
+    public class IssueBST
     {
         private class Node
         {
-            public ReportIssue Data;
-            public Node Left;
-            public Node Right;
+            public ReportIssue Issue;
+            public Node Left, Right;
 
-            public Node(ReportIssue data)
+            public Node(ReportIssue issue)
             {
-                Data = data;
+                Issue = issue;
             }
         }
 
-        private Node root;
+        private Node _root;
 
         public void Insert(ReportIssue issue)
         {
-            root = InsertRec(root, issue);
+            _root = InsertRec(_root, issue);
         }
 
         private Node InsertRec(Node root, ReportIssue issue)
@@ -106,7 +102,7 @@ namespace RI_App.DataStructure
             if (root == null)
                 return new Node(issue);
 
-            if (issue.DateReported < root.Data.DateReported)
+            if (issue.DateReported < root.Issue.DateReported)
                 root.Left = InsertRec(root.Left, issue);
             else
                 root.Right = InsertRec(root.Right, issue);
@@ -114,100 +110,149 @@ namespace RI_App.DataStructure
             return root;
         }
 
+        public void Remove(ReportIssue issue)
+        {
+            _root = RemoveRec(_root, issue);
+        }
+
+        private Node RemoveRec(Node root, ReportIssue issue)
+        {
+            if (root == null)
+                return root;
+
+            if (issue.Id < root.Issue.Id)
+                root.Left = RemoveRec(root.Left, issue);
+            else if (issue.Id > root.Issue.Id)
+                root.Right = RemoveRec(root.Right, issue);
+            else
+            {
+                if (root.Left == null) return root.Right;
+                if (root.Right == null) return root.Left;
+
+                root.Issue = MinValue(root.Right);
+                root.Right = RemoveRec(root.Right, root.Issue);
+            }
+
+            return root;
+        }
+
+        private ReportIssue MinValue(Node node)
+        {
+            ReportIssue minv = node.Issue;
+            while (node.Left != null)
+            {
+                minv = node.Left.Issue;
+                node = node.Left;
+            }
+            return minv;
+        }
+
         public List<ReportIssue> InOrderTraversal()
         {
             var list = new List<ReportIssue>();
-            InOrder(root, list);
+            InOrderRec(_root, list);
             return list;
         }
 
-        private void InOrder(Node node, List<ReportIssue> list)
+        private void InOrderRec(Node root, List<ReportIssue> list)
         {
-            if (node == null) return;
-            InOrder(node.Left, list);
-            list.Add(node.Data);
-            InOrder(node.Right, list);
+            if (root != null)
+            {
+                InOrderRec(root.Left, list);
+                list.Add(root.Issue);
+                InOrderRec(root.Right, list);
+            }
         }
     }
 
-    // ======================================
-    // === Min-Heap (earliest issue first) ===
-    // ======================================
-    public class MinHeap
+    // -------- Max Heap for issue priority --------
+    public class IssueHeap
     {
         private List<ReportIssue> _heap = new List<ReportIssue>();
-
-        private int Parent(int i) => (i - 1) / 2;
-        private int Left(int i) => 2 * i + 1;
-        private int Right(int i) => 2 * i + 2;
 
         public void Insert(ReportIssue issue)
         {
             _heap.Add(issue);
-            int i = _heap.Count - 1;
-            while (i > 0 && _heap[Parent(i)].DateReported > _heap[i].DateReported)
-            {
-                Swap(i, Parent(i));
-                i = Parent(i);
-            }
+            HeapifyUp(_heap.Count - 1);
         }
 
-        public ReportIssue ExtractMin()
+        public ReportIssue RemoveMax()
         {
             if (_heap.Count == 0) return null;
-            ReportIssue root = _heap[0];
-            _heap[0] = _heap[^1];
+
+            var max = _heap[0];
+            _heap[0] = _heap[_heap.Count - 1];
             _heap.RemoveAt(_heap.Count - 1);
-            Heapify(0);
-            return root;
+            HeapifyDown(0);
+            return max;
         }
 
-        private void Heapify(int i)
+        public void RebuildHeap(IEnumerable<ReportIssue> issues)
         {
-            int smallest = i;
-            int l = Left(i);
-            int r = Right(i);
+            _heap = issues.ToList();
+            for (int i = _heap.Count / 2 - 1; i >= 0; i--)
+                HeapifyDown(i);
+        }
 
-            if (l < _heap.Count && _heap[l].DateReported < _heap[smallest].DateReported)
-                smallest = l;
-            if (r < _heap.Count && _heap[r].DateReported < _heap[smallest].DateReported)
-                smallest = r;
-
-            if (smallest != i)
+        private void HeapifyUp(int index)
+        {
+            while (index > 0)
             {
-                Swap(i, smallest);
-                Heapify(smallest);
+                int parent = (index - 1) / 2;
+                if (_heap[index].Priority <= _heap[parent].Priority)
+                    break;
+
+                (_heap[index], _heap[parent]) = (_heap[parent], _heap[index]);
+                index = parent;
             }
         }
 
-        private void Swap(int i, int j)
+        private void HeapifyDown(int index)
         {
-            var temp = _heap[i];
-            _heap[i] = _heap[j];
-            _heap[j] = temp;
+            int lastIndex = _heap.Count - 1;
+            while (true)
+            {
+                int left = 2 * index + 1;
+                int right = 2 * index + 2;
+                int largest = index;
+
+                if (left <= lastIndex && _heap[left].Priority > _heap[largest].Priority)
+                    largest = left;
+                if (right <= lastIndex && _heap[right].Priority > _heap[largest].Priority)
+                    largest = right;
+
+                if (largest == index) break;
+
+                (_heap[index], _heap[largest]) = (_heap[largest], _heap[index]);
+                index = largest;
+            }
         }
     }
 
-    // ======================================
-    // === Graph (category-based links) ===
-    // ======================================
-    public class Graph
+    // -------- Graph for related categories --------
+    public class IssueGraph
     {
-        private Dictionary<string, List<ReportIssue>> _adjacencyList = new();
+        private readonly Dictionary<string, List<ReportIssue>> _graph = new();
 
         public void AddIssue(ReportIssue issue)
         {
-            if (!_adjacencyList.ContainsKey(issue.Category))
-                _adjacencyList[issue.Category] = new List<ReportIssue>();
+            if (!_graph.ContainsKey(issue.Category))
+                _graph[issue.Category] = new List<ReportIssue>();
 
-            _adjacencyList[issue.Category].Add(issue);
+            _graph[issue.Category].Add(issue);
         }
 
-        public IEnumerable<ReportIssue> GetRelatedIssues(string category)
+        public void RemoveIssue(ReportIssue issue)
         {
-            if (_adjacencyList.ContainsKey(category))
-                return _adjacencyList[category];
-            return new List<ReportIssue>();
+            if (_graph.ContainsKey(issue.Category))
+                _graph[issue.Category].Remove(issue);
+        }
+
+        public List<ReportIssue> GetRelatedIssues(string category)
+        {
+            return _graph.ContainsKey(category)
+                ? _graph[category]
+                : new List<ReportIssue>();
         }
     }
 }
