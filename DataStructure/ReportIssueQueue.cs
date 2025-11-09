@@ -94,22 +94,14 @@ namespace RI_App.DataStructure
             }
         }
 
-        private Node root;
-
-        public void Insert(ReportIssue issue)
-        {
-            root = InsertRec(root, issue);
-        }
-
-        private Node InsertRec(Node root, ReportIssue issue)
-        {
-            if (root == null)
-                return new Node(issue);
-
-            if (issue.DateReported < root.Data.DateReported)
-                root.Left = InsertRec(root.Left, issue);
-            else
-                root.Right = InsertRec(root.Right, issue);
+        /// <summary>
+<<<<<<<<< Temporary merge branch 1
+        /// Returns all currently stored issues.
+=========
+        /// Returns all stored issues as a list.
+>>>>>>>>> Temporary merge branch 2
+        /// </summary>
+        public List<ReportIssue> GetAll() => _issues.ToList();
 
             return root;
         }
@@ -208,6 +200,8 @@ namespace RI_App.DataStructure
             if (_adjacencyList.ContainsKey(category))
                 return _adjacencyList[category];
             return new List<ReportIssue>();
+>>>>>>>>> Temporary merge branch 2
+>>>>>>>>> Temporary merge branch 2
         }
     }
 }
