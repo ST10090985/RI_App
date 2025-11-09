@@ -101,15 +101,14 @@ namespace RI_App.DataStructure
             root = InsertRec(root, issue);
         }
 
-        private Node InsertRec(Node root, ReportIssue issue)
-        {
-            if (root == null)
-                return new Node(issue);
-
-            if (issue.DateReported < root.Data.DateReported)
-                root.Left = InsertRec(root.Left, issue);
-            else
-                root.Right = InsertRec(root.Right, issue);
+        /// <summary>
+<<<<<<<<< Temporary merge branch 1
+        /// Returns all currently stored issues.
+=========
+        /// Returns all stored issues as a list.
+>>>>>>>>> Temporary merge branch 2
+        /// </summary>
+        public List<ReportIssue> GetAll() => _issues.ToList();
 
             return root;
         }
