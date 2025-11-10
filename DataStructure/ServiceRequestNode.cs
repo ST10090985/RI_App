@@ -4,6 +4,8 @@ using System.Collections.Generic;
 
 namespace RI_App.DataStructure
 {
+    // Node class representing each service request in the tree
+    //Binary Search Tree
     public class ServiceRequestNode
     {
         public ServiceRequest Data { get; set; }
@@ -16,6 +18,7 @@ namespace RI_App.DataStructure
         }
     }
 
+    // Binary Search Tree to manage service requests
     public class ServiceRequestTree
     {
         private ServiceRequestNode _root;
@@ -36,6 +39,7 @@ namespace RI_App.DataStructure
             _root = InsertNode(_root, request);
         }
 
+        // Recursive insertion logic
         private ServiceRequestNode InsertNode(ServiceRequestNode node, ServiceRequest request)
         {
             if (node == null)
@@ -77,9 +81,11 @@ namespace RI_App.DataStructure
             return list;
         }
 
+        // Recursive traversal helper
         private void TraverseInOrder(ServiceRequestNode node, List<ServiceRequest> list)
         {
             if (node == null) return;
+
             TraverseInOrder(node.Left, list);
             list.Add(node.Data);
             TraverseInOrder(node.Right, list);
