@@ -8,9 +8,88 @@ namespace RI_App.Controllers
 {
     public class ServiceRequestController : Controller
     {
+        
+        // Both data structures — one for order (BST), one for priority (Heap)
         private static ServiceRequestTree _tree = new();
         private static ServiceRequestHeap _heap = new();
 
+        private static bool _dataInitialized = false; // ensures we only seed once
+
+        // Constructor: seeds dummy data into both structures
+        public ServiceRequestController()
+        {
+            if (!_dataInitialized)
+            {
+                SeedDummyData();
+                _dataInitialized = true;
+            }
+        }
+
+        /// <summary>
+        /// Inserts dummy requests into both the BST and Heap.
+        /// </summary>
+        private void SeedDummyData()
+        {
+            var dummyRequests = new[]
+            {
+                new ServiceRequest
+                {
+                    Id = 1001,
+                    Title = "Printer Not Working",
+                    Description = "Printer in the admin office is offline.",
+                    Status = "Pending",
+                    Priority = 2,
+                    Progress = 0,
+                    CreatedDate = DateTime.Now.AddDays(-3)
+                },
+                new ServiceRequest
+                {
+                    Id = 1002,
+                    Title = "Wi-Fi Connection Issue",
+                    Description = "Network connection is dropping intermittently.",
+                    Status = "In Progress",
+                    Priority = 3,
+                    Progress = 50,
+                    CreatedDate = DateTime.Now.AddDays(-2)
+                },
+                new ServiceRequest
+                {
+                    Id = 1003,
+                    Title = "Software Update Needed",
+                    Description = "Requesting update for accounting software.",
+                    Status = "Completed",
+                    Priority = 1,
+                    Progress = 100,
+                    CreatedDate = DateTime.Now.AddDays(-5)
+                },
+                new ServiceRequest
+                {
+                    Id = 1004,
+                    Title = "Broken Projector",
+                    Description = "Projector in classroom B2 needs repair.",
+                    Status = "Pending",
+                    Priority = 3,
+                    Progress = 0,
+                    CreatedDate = DateTime.Now.AddDays(-1)
+                },
+                new ServiceRequest
+                {
+                    Id = 1005,
+                    Title = "Request for New Chairs",
+                    Description = "Staff lounge needs new chairs.",
+                    Status = "Pending",
+                    Priority = 1,
+                    Progress = 0,
+                    CreatedDate = DateTime.Now.AddDays(-4)
+                }
+            };
+
+            foreach (var req in dummyRequests)
+            {
+                _tree.Insert(req); // stored by ID order
+                _heap.Insert(req); // stored by priority
+            }
+        }
 
 
         // Displays all requests
