@@ -169,15 +169,16 @@ namespace RI_App.Controllers
             TempData["SuccessMessage"] = "Request status updated successfully!";
             return RedirectToAction("Index");
         }
-
         // =============================
         // PRIORITY QUEUE VIEW (HEAP)
         // =============================
         [HttpGet]
-        public IActionResult PriorityQueue(string? searchTerm)
+        [HttpGet]
+        public IActionResult PriorityQueue(string? searchTerm, string sortOrder = "desc")
         {
             var heapList = _heap.GetAll();
 
+            // 🔍 Optional search filter
             if (!string.IsNullOrEmpty(searchTerm))
             {
                 searchTerm = searchTerm.ToLower();
@@ -187,8 +188,17 @@ namespace RI_App.Controllers
                     .ToList();
             }
 
+            // 🔽 Sorting logic
+            if (sortOrder == "asc")
+                heapList = heapList.OrderBy(r => r.Priority).ToList();
+            else
+                heapList = heapList.OrderByDescending(r => r.Priority).ToList();
+
             ViewBag.SearchTerm = searchTerm;
+            ViewBag.SortOrder = sortOrder; // store for toggle button
+
             return View(heapList);
         }
+
     }
 }
