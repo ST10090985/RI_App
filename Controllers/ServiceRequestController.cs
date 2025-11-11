@@ -169,7 +169,6 @@ namespace RI_App.Controllers
             TempData["SuccessMessage"] = "Request status updated successfully!";
             return RedirectToAction("Index");
         }
-
         // =============================
         // PRIORITY QUEUE VIEW (HEAP)
         // =============================
