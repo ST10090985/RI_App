@@ -11,6 +11,8 @@ namespace RI_App.Controllers
         
         // Both data structures — one for order (BST), one for priority (Heap)
         private static ServiceRequestTree _tree = new();
+<<<<<<<<< Temporary merge branch 1
+=========
         private static ServiceRequestHeap _heap = new();
 
         private static bool _dataInitialized = false; // ensures we only seed once
@@ -117,7 +119,10 @@ namespace RI_App.Controllers
                 request.Status = "Pending";
                 request.Progress = 0;
                 _tree.Insert(request);
+<<<<<<<<< Temporary merge branch 1
+=========
                 _heap.Insert(request); 
+>>>>>>>>> Temporary merge branch 2
 
                 TempData["SuccessMessage"] = "Service request added successfully!";
                 return RedirectToAction("Index");
@@ -157,6 +162,8 @@ namespace RI_App.Controllers
             TempData["SuccessMessage"] = "Request status updated successfully!";
             return RedirectToAction("Index");
         }
+<<<<<<<<< Temporary merge branch 1
+=========
 
         // =============================
         // PRIORITY QUEUE VIEW
@@ -169,5 +176,6 @@ namespace RI_App.Controllers
         }
 
 
+>>>>>>>>> Temporary merge branch 2
     }
 }
