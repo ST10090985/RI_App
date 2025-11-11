@@ -26,7 +26,54 @@
 
 
 
-\*\*Instructions\*\*
+**\*\*Instructions\*\***
+
+
+
+&nbsp;***How to Compile and Run the Application***
+
+
+
+1. Open the Solution
+
+
+
+* &nbsp;	Launch Visual Studio 2022.
+* &nbsp;	Open the solution file: RI\_App.sln.
+
+
+
+2\. Build the Project
+
+
+
+* &nbsp;	Go to the Build menu → Click Build Solution (Ctrl + Shift + B).
+* &nbsp;	Ensure there are no errors in the Output window.
+
+
+
+
+
+3\. Run the Application
+
+
+
+* &nbsp;	Press F5 or click the green “Play” button to start debugging.
+* &nbsp;	The default browser will open to https://localhost:xxxx/ServiceRequest/Index.
+
+
+
+4\. Usage Overview
+
+
+
+* Navigate to “Service Requests” to view all requests stored in the BST.
+* Go to “Priority Queue” to view requests by priority (Heap).
+* Use the Search Bar to filter requests by title or description.
+* Click Create to add new requests (they are stored in both data structures).
+* Click Update Status to modify progress or completion.
+
+
 
 
 
@@ -38,7 +85,6 @@
 
 ##### **--> For Report Issues (Part 1)**
 
-* Run the application via Visual Studio with https
 * You may click on dark mode to change  button the website theme to dark or click it again it make it light themed. This is my chosen user engagement strategy(Accessibility)
 * You may click the Blue "Report Issues" to take you to the create report page.
 * You may input your report details and attach a file of your choosing then click submit, if everything is submitted it will justify it has been saved with a message.
@@ -109,7 +155,8 @@ InOrderTraversal() — Returns all requests in ascending order (by ID).
 
 **-- Usage**:
 
-Displayed in the Index view of the ServiceRequestController.
+Used on the Index Page, which displays all service requests in ascending order of their ID for clear, predictable navigation.
+
 
 
 ================================================================================================
@@ -144,11 +191,49 @@ GetAll() — Returns all requests in heap order.
 
 
 
-**-- Usage:**
+**-- Example Usage:**
 
-Displayed in the PriorityQueue view of the ServiceRequestController.
+Used on the Priority Queue Page, allowing users to view and toggle between High → Low or Low → High priority order.
 
-Users can toggle between Descending (High → Low) and Ascending (Low → High) order.
+
+
+🔍 Algorithmic Efficiency
+
+Operation	BST (Average)	Heap (Average)
+
+Insert		O(log n)	O(log n)
+
+Search		O(log n)	O(1) for top element
+
+Traversal	O(n)		O(n)
+
+
+
+These structures were selected for their speed and efficiency in handling ordered data and priority-driven queues.
+
+
+
+=================================================================================================
+
+
+
+**\*\*Contribution to System Efficiency\*\***
+
+
+
+**Feature				Contribution**
+
+BST				Allows quick retrieval and sorting of service requests by ID.
+
+Heap				Ensures urgent issues are prioritized automatically.
+
+Search Function			Enhances usability by locating requests instantly.
+
+Dummy Data Initialization	Prevents duplication while providing meaningful examples.
+
+Progress \& Status Update	Demonstrates dynamic updates using tree references.
+
+
 
 
 
