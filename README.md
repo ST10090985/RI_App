@@ -64,8 +64,8 @@
 
 * The ServiceRequest/Index.cshtml page will show you a list of requests (Currently filled with preset dummy data)
 * There is a search bar which will allow you to search for a specific request based of its Description once writing the specific term then hitting search.
-* The clear button will reset your search to default 
-* The "New Service Request" will take you to the ServiceRequest/Create.cshtml page where you can create a request. 
+* The clear button will reset your search to default
+* The "New Service Request" will take you to the ServiceRequest/Create.cshtml page where you can create a request.
 * "View by Priority" which will take you to the ServiceRequest/PriorityQueue.cshtml page where it will who a list in descending order based of priority (priority is determined by its priority term ex. low, medium, high )
 * PriorityQueue.cshtml page has a Sort toggle button that alters the table based of the priority list order between ascending and descending order
 * PriorityQueue.cshtml page, there is a search bar that can be used to filter the list based of the title.
@@ -73,10 +73,82 @@
 
 
 
-Service Request uses both Heaps and a Binary Search Tree
+###### 
+
+###### ***-> Data Structures Implemented\*\*\****
 
 
 
+\*\***Binary Search Tree (BST)\*\***
+
+
+
+**-- File**: **ServiceRequestTree**.cs
+
+Purpose:
+
+Used to store and retrieve all service requests in a sorted order by their Id.
+
+
+
+**-- Operations**:
+
+
+
+Insert(ServiceRequest) — Adds a new request in order.
+
+
+
+Find(int id) — Searches for a request by ID.
+
+
+
+InOrderTraversal() — Returns all requests in ascending order (by ID).
+
+
+
+**-- Usage**:
+
+Displayed in the Index view of the ServiceRequestController.
+
+
+================================================================================================
+
+
+
+\*\***Heap / Priority Queue\*\***
+
+
+
+**-- File: ServiceRequestHeap.cs**
+
+Purpose:
+
+Maintains all requests ordered by their Priority (High → Medium → Low).
+
+
+
+**-- Operations:**
+
+
+
+Insert(ServiceRequest) — Adds a new request based on priority.
+
+
+
+ExtractHighestPriority() — Removes and returns the most urgent request.
+
+
+
+GetAll() — Returns all requests in heap order.
+
+
+
+**-- Usage:**
+
+Displayed in the PriorityQueue view of the ServiceRequestController.
+
+Users can toggle between Descending (High → Low) and Ascending (Low → High) order.
 
 
 
