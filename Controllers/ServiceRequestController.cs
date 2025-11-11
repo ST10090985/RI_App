@@ -8,7 +8,6 @@ namespace RI_App.Controllers
 {
     public class ServiceRequestController : Controller
     {
-        
         // Both data structures — one for order (BST), one for priority (Heap)
         private static ServiceRequestTree _tree = new();
         private static ServiceRequestHeap _heap = new();
@@ -91,23 +90,36 @@ namespace RI_App.Controllers
             }
         }
 
-
-        // Displays all requests
+        // =============================
+        // INDEX (BST View with Search)
+        // =============================
         [HttpGet]
-        public IActionResult Index()
+        public IActionResult Index(string? searchTerm)
         {
             var requests = _tree.InOrderTraversal();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                requests = requests
+                    .Where(r => (r.Title != null && r.Title.ToLower().Contains(searchTerm)) ||
+                                (r.Description != null && r.Description.ToLower().Contains(searchTerm)))
+                    .ToList();
+            }
+
+            ViewBag.SearchTerm = searchTerm;
             return View(requests);
         }
 
-        // Create a new request form
+        // =============================
+        // CREATE NEW REQUEST
+        // =============================
         [HttpGet]
         public IActionResult Create()
         {
             return View();
         }
 
-        // Handles form submission for new request
         [HttpPost]
         public IActionResult Create(ServiceRequest request)
         {
@@ -117,17 +129,17 @@ namespace RI_App.Controllers
                 request.Status = "Pending";
                 request.Progress = 0;
                 _tree.Insert(request);
-                _heap.Insert(request); 
+                _heap.Insert(request);
 
                 TempData["SuccessMessage"] = "Service request added successfully!";
                 return RedirectToAction("Index");
             }
             else
             {
-                TempData["SuccessMessage"] = "Service request added unsuccessfully!";
+                TempData["ErrorMessage"] = "Service request creation failed!";
             }
 
-                return View(request);
+            return View(request);
         }
 
         // =============================
@@ -159,15 +171,24 @@ namespace RI_App.Controllers
         }
 
         // =============================
-        // PRIORITY QUEUE VIEW
+        // PRIORITY QUEUE VIEW (HEAP)
         // =============================
-        [HttpGet] 
-        public IActionResult PriorityQueue()
+        [HttpGet]
+        public IActionResult PriorityQueue(string? searchTerm)
         {
             var heapList = _heap.GetAll();
+
+            if (!string.IsNullOrEmpty(searchTerm))
+            {
+                searchTerm = searchTerm.ToLower();
+                heapList = heapList
+                    .Where(r => (r.Title != null && r.Title.ToLower().Contains(searchTerm)) ||
+                                (r.Description != null && r.Description.ToLower().Contains(searchTerm)))
+                    .ToList();
+            }
+
+            ViewBag.SearchTerm = searchTerm;
             return View(heapList);
         }
-
-
     }
 }

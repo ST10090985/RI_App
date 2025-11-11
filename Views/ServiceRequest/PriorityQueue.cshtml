@@ -4,6 +4,16 @@
     ViewData["Title"] = "Priority Queue";
 }
 
+<form method="get" asp-action="PriorityQueue" class="mb-3">
+    <div class="input-group">
+        <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Search requests..." />
+        <button type="submit" class="btn btn-primary">Search</button>
+        <a href="@Url.Action("PriorityQueue")" class="btn btn-secondary">Clear</a>
+    </div>
+</form>
+
+
+
 <div class="container mt-5">
     <h2>Service Requests by Priority</h2>
     <hr />

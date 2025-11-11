@@ -11,6 +11,15 @@
     <a asp-controller="ServiceRequest" asp-action="Create" class="btn btn-primary mb-3">New Service Request</a>
     <a asp-controller="ServiceRequest" asp-action="PriorityQueue" class="btn btn-secondary mb-3 ms-2">View by Priority</a>
 
+    <form method="get" asp-action="Index" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="searchTerm" value="@ViewBag.SearchTerm" class="form-control" placeholder="Search requests..." />
+            <button type="submit" class="btn btn-primary">Search</button>
+            <a href="@Url.Action("Index")" class="btn btn-secondary">Clear</a>
+        </div>
+    </form>
+
+
     @if (TempData["SuccessMessage"] != null)
     {
         <div class="alert alert-success">@TempData["SuccessMessage"]</div>
