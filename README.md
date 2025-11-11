@@ -30,13 +30,13 @@
 
 
 
--->Main menu 
+##### **-->Main menu**
 
-* All buttons are functional except "Service Request Status" which has been disabled for now
+* All buttons are functional, and will take you to each part of the said pages below.
 
 
 
---> For Report Issues 
+##### **--> For Report Issues (Part 1)**
 
 * Run the application via Visual Studio with https
 * You may click on dark mode to change  button the website theme to dark or click it again it make it light themed. This is my chosen user engagement strategy(Accessibility)
@@ -49,11 +49,36 @@
 
 
 
---> For local Events
+##### --> For local Events (Part 2)
 
 * There is a button called Add Event where you can input details of a event you would like to add to the list
-* You can used the search bar to filter specific categories you would like filtered in the table. 
+* You can used the search bar to filter specific categories you would like filtered in the table.
 * You can used the date bar to filter specific dates which you would like to see in the table.
-* The recommended table will appear below the main table after you search for at least one category. 
+* The recommended table will appear below the main table after you search for at least one category.
 * You can use the Home button to return back to the main menu
-* You can toggle light mode and dark mode with the button on the top right that may say dark or light mode. 
+* You can toggle light mode and dark mode with the button on the top right that may say dark or light mode.
+
+
+
+##### --> For Service Request (Final POE/ Part 3)
+
+* The ServiceRequest/Index.cshtml page will show you a list of requests (Currently filled with preset dummy data)
+* There is a search bar which will allow you to search for a specific request based of its Description once writing the specific term then hitting search.
+* The clear button will reset your search to default 
+* The "New Service Request" will take you to the ServiceRequest/Create.cshtml page where you can create a request. 
+* "View by Priority" which will take you to the ServiceRequest/PriorityQueue.cshtml page where it will who a list in descending order based of priority (priority is determined by its priority term ex. low, medium, high )
+* PriorityQueue.cshtml page has a Sort toggle button that alters the table based of the priority list order between ascending and descending order
+* PriorityQueue.cshtml page, there is a search bar that can be used to filter the list based of the title.
+* The clear button resets the filter.
+
+
+
+Service Request uses both Heaps and a Binary Search Tree
+
+
+
+
+
+
+
+
